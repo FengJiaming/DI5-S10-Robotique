@@ -30,7 +30,6 @@ Moteur_Gauche_Correcteur_PID = CORRECTEUR_PID (Kp, Ki, Kd, Delta_T, Mot_Gauche_E
 Moteur_Droit_Correcteur_PID = CORRECTEUR_PID (Kp, Ki, Kd, Delta_T, Mot_Droit_Encodeur, Moteur_Droit)
 
 def Avancer (consigne_rotation_roue) :
-    while (True):
         # Commande du moteur droit
         Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue)
         # Commande du moteur gauche
@@ -39,7 +38,6 @@ def Avancer (consigne_rotation_roue) :
         Moteur_Gauche_Correcteur_PID.consigne = consigne_rotation_roue
 
 def Reculer (consigne_rotation_roue) :
-    while (True):
         # Commande du moteur droit
         Moteur_Droit.Cmde_moteur(SENS_ANTI_HORAIRE,consigne_rotation_roue)
         # Commande du moteur gauche
@@ -47,44 +45,46 @@ def Reculer (consigne_rotation_roue) :
         Moteur_Droit_Correcteur_PID.consigne = consigne_rotation_roue
         Moteur_Gauche_Correcteur_PID.consigne = consigne_rotation_roue
 
-def Pivoter_droite (consigne_rotation_roue) :
-    while (True):
+def Pivoter_Droite (consigne_rotation_roue) :
         # Commande du moteur droit
-        Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/2)
+        Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/4)
         # Commande du moteur gauche
         Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue)
-        Moteur_Droit_Correcteur_PID.consigne = consigne_rotation_roue
+        Moteur_Droit_Correcteur_PID.consigne = consigne_rotation_roue/4
         Moteur_Gauche_Correcteur_PID.consigne = consigne_rotation_roue
 
-def Pivoter_gauche (consigne_rotation_roue) :
-    while (True):
+def Pivoter_Gauche (consigne_rotation_roue) :
         # Commande du moteur droit
         Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue)
         # Commande du moteur gauche
-        Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/2)
+        Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/4)
         Moteur_Droit_Correcteur_PID.consigne = consigne_rotation_roue
-        Moteur_Gauche_Correcteur_PID.consigne = consigne_rotation_roue
+        Moteur_Gauche_Correcteur_PID.consigne = consigne_rotation_roue/4
 
 def Arret () :
     Moteur_Droit_Correcteur_PID.consigne = 0.0
     Moteur_Gauche_Correcteur_PID.consigne = 0.0
-    Moteur_Droit_Pont_H.Arret_moteur ()
-    Moteur_Gauche_Pont_H.Arret_moteur ()
+    Moteur_Droit.Arret_moteur ()
+    Moteur_Gauche.Arret_moteur ()
 
 while True :
     Arret()
     time.sleep (0.5)
+    print("Avancer")
     Avancer (0.5)
     time.sleep (6)
     Arret()
     time.sleep(0.05)
-    Pivoter_Droite (0.3)
-    time.sleep(1)
+    print("Pivoter_droite")
+    Pivoter_Droite (1)
+    time.sleep(3)
     Arret()
     time.sleep(0.05)
-    Pivoter_Gauche (0.3)
-    time.sleep(1)
+    print("pivoter_gauche")
+    Pivoter_Gauche (1)
+    time.sleep(3)
     Arret()
     time.sleep(0.05)
+    print("Reculer")
     Reculer (0.6)
     time.sleep(5)
