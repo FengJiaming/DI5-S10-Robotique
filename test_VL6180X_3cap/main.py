@@ -65,6 +65,6 @@ while True :
         Luminosite[i] = capteur_VL6180X[i].ambiant_light_mesure ()
         time.sleep(0.002)
     print ('Distance : %d %d %d %d' %(Distance[0], Distance[1])#Distance[2]))
-    print ('Luminosite : %.1f %.1f %.1f %.1f' %(Luminosite[0],Luminosite[1])#, Luminosite[2]))
+    print ('Luminosite : %.1f %.1f %.1f %.1f' %(Luminosite[0],Luminosite[1]))#, Luminosite[2]))
     print ('----------------------------------------')
     Index +=1
