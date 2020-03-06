@@ -27,3 +27,5 @@ while True :
     print ('Luminosite : %.1f' %(Luminosite))
     print ('----------------------------------------')
     Index +=1
+    if Index > 20:
+        break
