@@ -20,11 +20,11 @@ VL6180X_I2C_Adr = (const(0x2A), const(0x2B))#, const(0x2C))
 # [0] : P6   p3
 # [1] : P7   p5
 # [2] : P19
-print('Config. des broches CE des capteurs VL8160X: debut')
+print('Config. des broches CE des capteurs VL6180X: debut')
 # Liste des variables Pin correspondant aux broches CE
 VL6180X_GPIO_CE_Pin = []
 for pin in VL6180X_CE_Pin :
-    VL6180X_GPIO_CE_Pin.append(Pin(pin, mode=Pin.OUT))
+    VL6180X_GPIO_CE_Pin.append(Pin(pin, mode=Pin.OUT))  # Pin(VL6180X_CE_Pin, mode=Pin.OUT)
     # Inhiber chacun des capteurs de distances
     VL6180X_GPIO_CE_Pin[-1].value(0)
 print('Config. des broches CE des capteurs VL8160X: fin')
@@ -49,8 +49,7 @@ for i in range (N_VL6180X) :
     # remplir la liste des capteurs de distance
     capteur_VL6180X.append(VL6180X(VL6180X_I2C_adr_defaut, i2c))
     # Init nouvelle adr I2C
-    capteur_VL6180X[i].Modif_Adr_I2C(VL6180X_GPIO_CE_Pin[i],
-    VL6180X_I2C_Adr[i], VL6180X_I2C_adr_defaut)
+    capteur_VL6180X[i].Modif_Adr_I2C(VL6180X_GPIO_CE_Pin[i],VL6180X_I2C_Adr[i], VL6180X_I2C_adr_defaut)
 print('Init. des capteurs de distance-luminosite: fin')
 adr = i2c.scan()
 print ('Adresse peripherique I2C (2) :', adr)
@@ -59,12 +58,12 @@ Index = 0
 while True :
     print('Index : ', Index)
     # Acquisition distance et luminosite
-    for i in range (N_VL6180X) :
+    for i in range (N_VL6180X) :  #N_VL6180X=const(2)
         Distance[i] = capteur_VL6180X[i].range_mesure ()
         time.sleep(0.002)
         Luminosite[i] = capteur_VL6180X[i].ambiant_light_mesure ()
         time.sleep(0.002)
-    print ('Distance : %d %d %d %d' %(Distance[0], Distance[1]))#Distance[2]))
-    print ('Luminosite : %.1f %.1f %.1f %.1f' %(Luminosite[0],Luminosite[1]))#, Luminosite[2]))
+    print ('Distance : %d %d ' %(Distance[0], Distance[1]) )#Distance[2]))  %d %d
+    print ('Luminosite : %.1f %.1f ' %(Luminosite[0],Luminosite[1]) )#, Luminosite[2]))  %.1f %.1f
     print ('----------------------------------------')
     Index +=1
