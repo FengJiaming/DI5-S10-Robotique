@@ -17,7 +17,7 @@ print ('Adresse = ', adr)
 
 f = open('sd/test.txt','w')
 
-f.write('Sans deconner, j\'ai fait 6 ans de mma, 7 ans de boxe en parallèle, ainsi que 4 ans de musculation.')
+f.write('Tout fonctionne')
 f.close()
 
 while True:
