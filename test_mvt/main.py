@@ -23,7 +23,7 @@ def Reculer (consigne_rotation_roue) :
 
 def Pivoter_droite (consigne_rotation_roue) :
     # Commande du moteur droit
-    Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/3)
+    Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/2)
     # Commande du moteur gauche
     Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue)
 
@@ -32,14 +32,14 @@ def Pivoter_gauche (consigne_rotation_roue) :
     # Commande du moteur droit
     Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue)
     # Commande du moteur gauche
-    Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/3)
-    print("pivoter gauche", consigne_rotation_roue/3)
+    Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_rotation_roue/2)
+    print("pivoter gauche", consigne_rotation_roue/2)
 
 def Arret () :
     Moteur_Droit.Arret_moteur ()
     Moteur_Droit.Arret_moteur ()
 
-consigne_rotation_roue = 1
+consigne_rotation_roue = 2
 while (True):
     Arret ()
     time.sleep(0.05)

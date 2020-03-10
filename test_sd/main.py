@@ -1,5 +1,6 @@
 from machine import RTC
 from machine import SD
+from BME280 import *
 import os
 import time
 
@@ -18,15 +19,16 @@ f = open('/sd/info.csv', 'w')
 f.write('AA;MM;JJ;HH;MM;SS;temp;humi;pres\r\n')
 
 count = 0
+rtc = RTC()
 rtc.init((2020, 3, 9, 10, 0, 0, 0, 0))
 # rtc.ntp_sync("pool.ntp.org")
 
 while (count < 5):
     print(rtc.now())
-    print(rtc.datetime())
-    print(rtc.datetime()[0])
-    f.write(rtc.datetime()[0],';',rtc.datetime()[1],';',rtc.datetime()[2],';',rtc.datetime()[3],rtc.datetime()[4],';',rtc.datetime()[5],';',capteur_BME280.read_temp(),';',capteur_BME280.read_humidity(),';',capteur_BME280.read_pression(),'\r\n')
+    print(rtc.now()[0])
+    f.write(rtc.now()()[0],';',rtc.now()()[1],';',rtc.now()()[2],';',rtc.now()()[3],rtc.now()()[4],';',rtc.now()()[5],';',capteur_BME280.read_temp(),';',capteur_BME280.read_humidity(),';',capteur_BME280.read_pression(),'\r\n')
     time.sleep(1)
     count+=1
 
 f.close()
+os.unmount('/sd')
