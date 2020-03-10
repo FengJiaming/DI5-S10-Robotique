@@ -42,7 +42,12 @@ def Arret () :
 consigne_rotation_roue = 2
 while (True):
     Arret ()
-    time.sleep(0.05)
+    time.sleep(0.5)
+    Reculer(consigne_rotation_roue)
+    time.sleep (5)
+
+
+'''
     print("Avancer")
     Avancer(consigne_rotation_roue)
     time.sleep (6)
@@ -61,3 +66,4 @@ while (True):
     print("Pivoter_droite")
     Pivoter_droite (consigne_rotation_roue)
     time.sleep (5)
+'''

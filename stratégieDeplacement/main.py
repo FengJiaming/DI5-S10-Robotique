@@ -3,6 +3,7 @@ from DRV8833_V2 import *
 from ENCODEUR import *
 from CORRECTEUR_PID import *
 from VL6180X import *
+#import random
 
 #--------------------------------------------
 #    config de pid
@@ -111,7 +112,7 @@ for i in range (N_VL6180X) :
 print('Init. des capteurs de distance-luminosite: fin')
 adr = i2c.scan()
 print ('Adresse peripherique I2C (2) :', adr)
-Index = 0
+'''
 while True :
     print('Index : ', Index)
     # Acquisition distance et luminosite
@@ -124,8 +125,55 @@ while True :
     print ('Luminosite : %.1f %.1f ' %(Luminosite[0],Luminosite[1]) )#, Luminosite[2]))  %.1f %.1f
     print ('----------------------------------------')
     Index +=1
+'''
+
+while True :
+    # Acquisition distance et luminosite
+    for i in range (N_VL6180X) :  #N_VL6180X=const(2)
+        Distance[i] = capteur_VL6180X[i].range_mesure ()
+        time.sleep(0.002)
+        Luminosite[i] = capteur_VL6180X[i].ambiant_light_mesure ()
+        time.sleep(0.002)
+    print ('Distance : %d %d ' %(Distance[0], Distance[1]) )#Distance[2]))  %d %d
+    print ('Luminosite : %.1f %.1f ' %(Luminosite[0],Luminosite[1]) )#, Luminosite[2]))  %.1f %.1f
+    print ('----------------------------------------')
 
 
+    Reculer (1.5)
+    time.sleep(0.2)
+'''
+    if ( Distance[0]<20 ) and ( Distance[1] <20 ):
+        Arret()
+        time.sleep (1)
+        Pivoter_Droite (2)
+        time.sleep(0.3)
+'''
+''''
+    if Distance[0]<20:
+        Arret()
+        time.sleep (0.5)
+        Pivoter_Droite ()
+
+
+    if Distance[1]<20:
+        Arret()
+        time.sleep (0.5)
+        Pivoter_Gauche (1)
+'''
+
+
+
+
+
+
+
+
+'''
+print(random.randint(0,2))
+print(random.randint(0,2))
+print(random.randint(0,2))
+'''
+'''
 
 while True :
 
@@ -149,3 +197,5 @@ while True :
     print("Reculer")
     Reculer (2)
     time.sleep(5)
+
+'''
