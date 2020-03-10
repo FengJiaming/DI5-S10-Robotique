@@ -7,6 +7,8 @@ from machine import Pin
 from machine import Timer
 from machine import SD
 from DRV8833_V3 import *
+from ENCODEUR import *
+from CORRECTEUR_PID import *
 import time
 
 #Variables globales pour moteurs et pont en H
@@ -47,15 +49,20 @@ def IT_Moteur_gauche_EncodeurB (arg) :
     global ticks_Mg_EncB
     ticks_Mg_EncB += 1
 #---------------------------------------------------------------------------
-# Routines de déplacements du robot
-# consigne_pwm_moteur : Valeur du rapport cyclique du signal PWM de commande des moteurs
 
-# Ecrire ici le code des fonctions :
-#   Avancer
-#   Reculer
-#   Pivoter_droite
-#   Pivoter_gauche
-#   Arret
+# Encodeurs
+print ('Initialisation Pin encodeurs moteurs : begin') # Ok avec Wipy 3.0
+Mot_Droit_EncodeurA = Pin('P17', mode = Pin.IN, pull=Pin.PULL_UP)
+Mot_Droit_EncodeurB = Pin('P18', mode = Pin.IN, pull=Pin.PULL_UP)
+Mot_Gauche_EncodeurA = Pin('P13', mode = Pin.IN, pull=Pin.PULL_UP)
+Mot_Gauche_EncodeurB = Pin('P15', mode = Pin.IN, pull=Pin.PULL_UP)
+print ('Initialisation Pin encodeurs moteurs : done')
+
+# Définition des modalités d'IT et d'appel des routines d'IT associées aux encodeurs
+Mot_Droit_EncodeurA.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_droit_EncodeurA) # Interruption sur fronts montant et descendant
+Mot_Droit_EncodeurB.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_droit_EncodeurB) # Interruption sur fronts montant et descendant
+Mot_Gauche_EncodeurA.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_gauche_EncodeurA) # Interruption sur fronts montant et descendant
+Mot_Gauche_EncodeurB.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_gauche_EncodeurB) # Interruption sur fronts montant et descendant
 
 #------------------------------------------------------------------------
 # Initialisation des moteurs
@@ -70,21 +77,62 @@ def IT_Moteur_gauche_EncodeurB (arg) :
 
 Moteur_Gauche = DRV8833 (DRV8833_AIN1, DRV8833_AIN2, DRV8833_Sleep_pin, 1, 500, 0, 1) # Sur connecteur Encoder1
 Moteur_Droit = DRV8833 (DRV8833_BIN1, DRV8833_BIN2, DRV8833_Sleep_pin, 1, 500, 2, 3) # Sur connecteur Encoder2
-Arret()
-#------------------------------------------------------------------------
-# Encodeurs
-print ('Initialisation Pin encodeurs moteurs : begin') # Ok avec Wipy 3.0
-Mot_Droit_EncodeurA = Pin('P17', mode = Pin.IN, pull=Pin.PULL_UP)
-Mot_Droit_EncodeurB = Pin('P18', mode = Pin.IN, pull=Pin.PULL_UP)
-Mot_Gauche_EncodeurA = Pin('P13', mode = Pin.IN, pull=Pin.PULL_UP)
-Mot_Gauche_EncodeurB = Pin('P15', mode = Pin.IN, pull=Pin.PULL_UP)
-print ('Initialisation Pin encodeurs moteurs : done')
 
-# Définition des modalités d'IT et d'appel des routines d'IT associées aux encodeurs
-Mot_Droit_EncodeurA.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_droit_EncodeurA) # Interruption sur fronts montant et descendant
-Mot_Droit_EncodeurB.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_droit_EncodeurB) # Interruption sur fronts montant et descendant
-Mot_Gauche_EncodeurA.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_gauche_EncodeurA) # Interruption sur fronts montant et descendant
-Mot_Gauche_EncodeurB.callback(Pin.IRQ_RISING | Pin.IRQ_FALLING, IT_Moteur_gauche_EncodeurB) # Interruption sur fronts montant et descendant
+Mot_Gauche_Encodeur = ENCODEUR (Mot_Gauche_EncodeurA_pin,Mot_Gauche_EncodeurB_pin, Moteur_Gauche)
+Mot_Droit_Encodeur = ENCODEUR (Mot_Droit_EncodeurA_pin,Mot_Droit_EncodeurB_pin, Moteur_Droit)
+
+Moteur_Gauche_Correcteur_PID = CORRECTEUR_PID (Kp, Ki, Kd, Delta_T, Mot_Gauche_Encodeur, Moteur_Gauche)
+Moteur_Droit_Correcteur_PID = CORRECTEUR_PID (Kp, Ki, Kd, Delta_T, Mot_Droit_Encodeur, Moteur_Droit)
+
+Arret()
+
+#------------------------------------------------------------------------
+# Routine#------------------------------------------------------------------------s de déplacements du robot
+# consigne_pwm_moteur : Valeur du rapport cyclique du signal PWM de commande des moteurs
+
+# Ecrire ici le code des fonctions :
+#   Avancer
+def Avancer (consigne_pwm_moteur) :
+        # Commande du moteur droit
+        Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_pwm_moteur)
+        # Commande du moteur gauche
+        Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_pwm_moteur)
+        Moteur_Droit_Correcteur_PID.consigne = consigne_pwm_moteur
+        Moteur_Gauche_Correcteur_PID.consigne = consigne_pwm_moteur
+
+#   Reculer
+def Reculer (consigne_pwm_moteur) :
+        # Commande du moteur droit
+        Moteur_Droit.Cmde_moteur(SENS_ANTI_HORAIRE,consigne_pwm_moteur)
+        # Commande du moteur gauche
+        Moteur_Gauche.Cmde_moteur(SENS_ANTI_HORAIRE,consigne_pwm_moteur)
+        Moteur_Droit_Correcteur_PID.consigne = consigne_pwm_moteur
+        Moteur_Gauche_Correcteur_PID.consigne = consigne_pwm_moteur
+
+#   Pivoter_droite
+def Pivoter_Droite (consigne_pwm_moteur) :
+        # Commande du moteur droit
+        Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_pwm_moteur/2)
+        # Commande du moteur gauche
+        Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_pwm_moteur)
+        Moteur_Droit_Correcteur_PID.consigne = consigne_pwm_moteur/2
+        Moteur_Gauche_Correcteur_PID.consigne = consigne_pwm_moteur
+
+#   Pivoter_gauche
+def Pivoter_Gauche (consigne_pwm_moteur) :
+        # Commande du moteur droit
+        Moteur_Droit.Cmde_moteur(SENS_HORAIRE,consigne_pwm_moteur)
+        # Commande du moteur gauche
+        Moteur_Gauche.Cmde_moteur(SENS_HORAIRE,consigne_pwm_moteur/2)
+        Moteur_Droit_Correcteur_PID.consigne = consigne_pwm_moteur
+        Moteur_Gauche_Correcteur_PID.consigne = consigne_pwm_moteur/2
+
+#   Arret
+def Arret () :
+    Moteur_Droit_Correcteur_PID.consigne = 0.0
+    Moteur_Gauche_Correcteur_PID.consigne = 0.0
+    Moteur_Droit.Arret_moteur ()
+    Moteur_Gauche.Arret_moteur ()
 
 # Initialisation de la carte SD
 print("Initialisation de la carte µSD : begin")
